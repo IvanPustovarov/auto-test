@@ -12,8 +12,11 @@
     >
       <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
         <button
+          v-for="city in cities"
+          :key="city.city_id"
           :disabled="show"
-          @click="goToCity('Moscow')"
+          @click="goToCity(city)"
+          :class="{ disabled: show }"
           class="
             inline-flex
             items-center
@@ -33,60 +36,16 @@
             mr-2
           "
         >
-          Заказать в Москву
-        </button>
-
-        <button
-          :disabled="show"
-          @click="goToCity('St-Petersburg')"
-          class="
-            inline-flex
-            items-center
-            justify-center
-            px-10
-            text-sm text-white
-            font-semibold
-            rounded
-            bg-green
-            border border-purple-200
-            hover:text-green hover:bg-white
-            focus:outline-none
-            focus:ring-2
-            focus:ring-purple-600
-            focus:ring-offset-2
-          "
-        >
-          Заказать в Санкт-Петербург
+          {{ city.text }}
         </button>
       </div>
       <dialog
-        class="backdrop:bg-gray-50 open:bg-black open:text-white modal-window"
+        class="backdrop:bg-gray-50 open:bg-white open:text-white modal-window"
         :open="show"
       >
         <form method="dialog">
-          <button
-            @click="cancel"
-            class="
-              inline-flex
-              items-center
-              justify-center
-              px-10
-              py-2
-              text-sm text-white
-              font-semibold
-              rounded
-              bg-green
-              border border-purple-200
-              hover:text-green hover:bg-white
-              focus:outline-none
-              focus:ring-2
-              focus:ring-purple-600
-              focus:ring-offset-2
-            "
-          >
-            cancel
-          </button>
-          {{ city }}
+          <h1 class="text-black font-bold mb-5">Заказать звонок</h1>
+          <OrderCall :city="city" />
         </form>
       </dialog>
     </div>
@@ -95,24 +54,34 @@
 
 <script>
 import "@/index.css";
+import OrderCall from "@/components/OrderCall.vue";
 
 export default {
   name: "App",
-  components: {},
+  components: {
+    OrderCall,
+  },
   methods: {
     goToCity(city) {
       this.city = city;
-      this.show = !this.show;
-    },
-    cancel() {
-      this.show = false;
+      this.$store.commit({
+        type: "changeShow",
+        payload: true,
+      });
     },
   },
   data() {
     return {
-      show: false,
-      city: "",
+      city: null,
     };
+  },
+  computed: {
+    show() {
+      return this.$store.state.isShow;
+    },
+    cities() {
+      return this.$store.state.cities;
+    },
   },
 };
 </script>
@@ -123,7 +92,10 @@ export default {
 }
 
 .ordercall {
-  background-color: rgb(63, 61, 61);
+  background-color: rgb(92, 89, 89);
+}
+.disabled {
+  display: none;
 }
 
 .modal-window {
