@@ -11,40 +11,31 @@
       "
     >
       <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-        <button
+        <CustomButton
           v-for="city in cities"
           :key="city.city_id"
           :disabled="show"
           @click="goToCity(city)"
           :class="{ disabled: show }"
           class="
-            inline-flex
-            items-center
-            justify-center
             px-20
             py-3
-            text-sm text-white
-            font-semibold
-            rounded
-            border border-purple-200
             bg-blue-600
-            hover:text-sky-900 hover:bg-white
-            focus:outline-none
-            focus:ring-2
-            focus:ring-purple-600
+            hover:text-sky-900
             focus:ring-offset-2
             mr-2
           "
-        >
-          {{ city.text }}
-        </button>
+          :text="city.text"
+        />
       </div>
       <dialog
         class="backdrop:bg-gray-50 open:bg-white open:text-white modal-window"
         :open="show"
       >
         <form method="dialog">
-          <h1 class="text-black font-bold mb-5">Заказать звонок</h1>
+          <h1 class="text-black font-bold mb-5" v-if="city">
+            Заказать звонок в город {{ city.name }}
+          </h1>
           <OrderCall :city="city" />
         </form>
       </dialog>
@@ -55,11 +46,13 @@
 <script>
 import "@/index.css";
 import OrderCall from "@/components/OrderCall.vue";
+import CustomButton from "./components/CustomButton.vue";
 
 export default {
   name: "App",
   components: {
     OrderCall,
+    CustomButton,
   },
   methods: {
     goToCity(city) {

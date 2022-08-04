@@ -2,84 +2,40 @@
   <div v-if="city" class="flex flex-row mb-4 input">
     <form
       @submit.prevent="submit"
-      :class="this.errors ? 'errors' : false"
       @keypress.enter.prevent
+      class="flex flex-col"
     >
-      <input
-        type="text"
-        v-model="name"
-        placeholder="Иван Иванов"
-        required
-        @invalid="invalidateForm"
-      />
-      <input
-        type="tel"
-        v-model="phone"
-        placeholder="+7 . . ."
-        required
-        @invalid="invalidateForm"
-      />
-      <input
-        type="email"
-        v-model="email"
-        placeholder="you@example.com"
-        required
-        @invalid="invalidateForm"
-      />
+      <div>
+        <input type="text" v-model="name" placeholder="Иван Иванов" />
+        <input type="tel" v-model="phone" placeholder="+7 . . ." />
+        <input type="email" v-model="email" placeholder="you@example.com" />
+      </div>
       <div class="flex justify-between">
-        <button
+        <CustomButton
           @click="cancel"
-          class="
-            inline-flex
-            items-center
-            justify-center
-            px-10
-            py-2
-            text-sm text-white
-            font-semibold
-            rounded
-            bg-red
-            border border-purple-200
-            hover:text-red hover:bg-white
-            focus:outline-none
-            focus:ring-2
-            focus:ring-purple-600
-            focus:ring-offset-2
-          "
-        >
-          Cancel
-        </button>
-        <button
-          :disabled="!isValidForm"
+          text="Отменить"
+          class="bg-red hover:text-red hover:bg-white"
+        />
+
+        <CustomButton
           @click="submit"
+          :disabled="!isValidForm"
+          text="Подтвердить"
           class="
-            inline-flex
-            items-center
-            justify-center
-            px-10
-            py-2
-            text-sm text-white
-            font-semibold
-            rounded
             bg-green
-            border border-purple-200
             hover:text-green hover:bg-white
-            focus:outline-none
-            focus:ring-2
-            focus:ring-purple-600
-            focus:ring-offset-2
+            disabled:bg-gray disabled:hover:text-white
           "
-        >
-          Confirm
-        </button>
+        />
       </div>
     </form>
-    <div class="text-black font-medium">{{ city.name }}</div>
   </div>
 </template>
 
 <script>
+import CustomButton from "./CustomButton.vue";
 export default {
+  components: { CustomButton },
   name: "OrderCall",
   props: {
     city: {
@@ -95,19 +51,16 @@ export default {
       email: "",
     };
   },
-  watch: {},
   computed: {
     isNameValid() {
       return this.name.length;
     },
     isPhoneValid() {
-      // eslint-disable-next-line no-useless-escape
-      let phoneRegex = /^\+?[7]{1}[0-9]{10}$/g;
+      const phoneRegex = /^\+?[7]{1}[0-9]{10}$/g;
       return phoneRegex.test(this.phone);
     },
     isEmailValid() {
-      // eslint-disable-next-line no-useless-escape
-      let emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+      const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g;
       return emailRegex.test(this.email);
     },
     isValidForm() {
@@ -119,6 +72,9 @@ export default {
       this.errors = true;
     },
     cancel() {
+      this.name = "";
+      this.phone = "";
+      this.email = "";
       this.$store.commit({
         type: "changeShow",
         payload: false,
@@ -129,6 +85,7 @@ export default {
         name: this.name,
         phone: this.phone,
         email: this.email,
+        city_id: this.city.name,
       };
       this.$store.commit({
         type: "changeShow",
@@ -151,16 +108,13 @@ export default {
 .input {
   color: black;
   input {
-    padding: 4px;
-    margin-right: 1rem;
+    padding: 5px;
+    margin: 0 1rem 1rem 0;
     border-radius: 5px;
-    border: 1px solid gray;
-  }
-}
-
-form.errors {
-  :invalid {
-    outline: 2px solid red;
+    border: 1px solid rgb(139, 134, 134);
+    &:last-child {
+      margin-right: 0;
+    }
   }
 }
 </style>
