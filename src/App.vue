@@ -11,21 +11,14 @@
       "
     >
       <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-        <CustomButton
+        <TheButton
           v-for="city in cities"
           :key="city.city_id"
           :disabled="show"
-          @click="goToCity(city)"
           :class="{ disabled: show }"
-          class="
-            px-20
-            py-3
-            bg-blue-600
-            hover:text-sky-900
-            focus:ring-offset-2
-            mr-2
-          "
+          type="default"
           :text="city.text"
+          @click="goToCity(city)"
         />
       </div>
       <dialog
@@ -46,19 +39,19 @@
 <script>
 import "@/index.css";
 import OrderCall from "@/components/OrderCall.vue";
-import CustomButton from "./components/CustomButton.vue";
+import TheButton from "./components/TheButton.vue";
 
 export default {
   name: "App",
   components: {
     OrderCall,
-    CustomButton,
+    TheButton,
   },
   methods: {
     goToCity(city) {
       this.city = city;
       this.$store.commit({
-        type: "changeShow",
+        type: "changeVisibilityDialog",
         payload: true,
       });
     },

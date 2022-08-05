@@ -1,31 +1,27 @@
 <template>
   <div v-if="city" class="flex flex-row mb-4 input">
     <form
-      @submit.prevent="submit"
-      @keypress.enter.prevent
       class="flex flex-col"
+      @submit.prevent="submitHandler"
+      @keypress.enter.prevent
     >
       <div>
-        <input type="text" v-model="name" placeholder="Иван Иванов" />
-        <input type="tel" v-model="phone" placeholder="+7 . . ." />
-        <input type="email" v-model="email" placeholder="you@example.com" />
+        <input v-model="name" type="text" placeholder="Иван Иванов" />
+        <input v-model="phone" type="tel" placeholder="+7 . . ." />
+        <input v-model="email" type="email" placeholder="you@example.com" />
       </div>
       <div class="flex justify-between">
-        <CustomButton
-          @click="cancel"
+        <TheButton
           text="Отменить"
-          class="bg-red hover:text-red hover:bg-white"
+          type="highlighted-red"
+          @click="cancelHandler"
         />
 
-        <CustomButton
-          @click="submit"
-          :disabled="!isValidForm"
+        <TheButton
+          :disabled="!isFormValid"
           text="Подтвердить"
-          class="
-            bg-green
-            hover:text-green hover:bg-white
-            disabled:bg-gray disabled:hover:text-white
-          "
+          type="confirm"
+          @click="submitHandler"
         />
       </div>
     </form>
@@ -33,9 +29,9 @@
 </template>
 
 <script>
-import CustomButton from "./CustomButton.vue";
+import TheButton from "./TheButton.vue";
 export default {
-  components: { CustomButton },
+  components: { TheButton },
   name: "OrderCall",
   props: {
     city: {
@@ -63,7 +59,7 @@ export default {
       const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g;
       return emailRegex.test(this.email);
     },
-    isValidForm() {
+    isFormValid() {
       return this.isNameValid && this.isPhoneValid && this.isEmailValid;
     },
   },
@@ -71,33 +67,21 @@ export default {
     invalidateForm() {
       this.errors = true;
     },
-    cancel() {
+    cancelHandler() {
       this.name = "";
       this.phone = "";
       this.email = "";
-      this.$store.commit({
-        type: "changeShow",
-        payload: false,
-      });
+      this.$store.commit("changeVisibilityDialog", { payload: false });
     },
-    submit() {
+    submitHandler() {
       const userData = {
         name: this.name,
         phone: this.phone,
         email: this.email,
-        city_id: this.city.name,
+        city_id: this.city.city_id,
       };
-      this.$store.commit({
-        type: "changeShow",
-        payload: false,
-      });
-      this.$store.dispatch({
-        type: "sendUser",
-        payload: userData,
-      });
-      this.name = "";
-      this.phone = "";
-      this.email = "";
+      this.$store.dispatch("submitUser", { payload: userData });
+      this.cancelHandler();
     },
   },
 };
