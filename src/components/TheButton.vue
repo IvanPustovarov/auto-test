@@ -36,7 +36,7 @@ export default {
 <style lang="scss" scoped>
 .default {
   padding: 0.75rem 5rem 0.75rem 5rem;
-  margin-right: 0.5rem;
+  margin: 0 0.5rem 0 0.5rem;
   background-color: #2563eb;
   &:hover {
     color: #0c4a6e;

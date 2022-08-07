@@ -1,5 +1,9 @@
 <template>
-  <div class="bg-gray-50 h-full" :class="{ ordercall: show }">
+  <div
+    class="bg-gray-50 h-full"
+    v-if="!callbackForm"
+    :class="{ ordercall: visibilityDialog }"
+  >
     <div
       class="
         max-w-7xl
@@ -14,8 +18,8 @@
         <TheButton
           v-for="city in cities"
           :key="city.city_id"
-          :disabled="show"
-          :class="{ disabled: show }"
+          :disabled="visibilityDialog"
+          :class="{ disabled: visibilityDialog }"
           type="default"
           :text="city.text"
           @click="goToCity(city)"
@@ -23,7 +27,7 @@
       </div>
       <dialog
         class="backdrop:bg-gray-50 open:bg-white open:text-white modal-window"
-        :open="show"
+        :open="visibilityDialog"
       >
         <form method="dialog">
           <h1 class="text-black font-bold mb-5" v-if="city">
@@ -34,12 +38,17 @@
       </dialog>
     </div>
   </div>
+  <div v-if="callbackForm">
+    <div v-html="callbackForm"></div>
+    <TheButton @click="fillFormAgain" text="Отправить снова" type="default" />
+  </div>
 </template>
 
 <script>
 import "@/index.css";
 import OrderCall from "@/components/OrderCall.vue";
 import TheButton from "./components/TheButton.vue";
+import filterXSS from "xss";
 
 export default {
   name: "App",
@@ -50,10 +59,10 @@ export default {
   methods: {
     goToCity(city) {
       this.city = city;
-      this.$store.commit({
-        type: "changeVisibilityDialog",
-        payload: true,
-      });
+      this.$store.commit("changeVisibilityDialog", true);
+    },
+    fillFormAgain() {
+      this.$store.commit("setCallbackForm", null);
     },
   },
   data() {
@@ -62,11 +71,21 @@ export default {
     };
   },
   computed: {
-    show() {
+    visibilityDialog() {
       return this.$store.state.isShow;
     },
     cities() {
       return this.$store.state.cities;
+    },
+    callbackForm() {
+      const sourseText = this.$store.state.callbackForm;
+      filterXSS(sourseText, {
+        whiteList: {
+          a: ["target", "href"],
+        },
+        onTag: (tag, html) => (tag === "br" ? " " : html),
+      });
+      return sourseText;
     },
   },
 };

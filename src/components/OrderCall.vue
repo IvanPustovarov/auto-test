@@ -41,7 +41,6 @@ export default {
   },
   data() {
     return {
-      errors: false,
       name: "",
       phone: "",
       email: "",
@@ -64,14 +63,11 @@ export default {
     },
   },
   methods: {
-    invalidateForm() {
-      this.errors = true;
-    },
     cancelHandler() {
       this.name = "";
       this.phone = "";
       this.email = "";
-      this.$store.commit("changeVisibilityDialog", { payload: false });
+      this.$store.commit("changeVisibilityDialog", false);
     },
     submitHandler() {
       const userData = {
@@ -80,7 +76,9 @@ export default {
         email: this.email,
         city_id: this.city.city_id,
       };
-      this.$store.dispatch("submitUser", { payload: userData });
+      if (this.isNameValid && this.isPhoneValid && this.isEmailValid) {
+        this.$store.dispatch("submitUser", userData);
+      }
       this.cancelHandler();
     },
   },
